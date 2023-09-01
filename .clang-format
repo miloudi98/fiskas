@@ -1,0 +1,23 @@
+---
+Language: Cpp
+Standard: Latest
+
+## How far `public:`, `private:`, and `protected:` are indented.
+AccessModifierOffset: -4
+
+## Tabs are four columns.
+TabWidth: 4
+
+## Each indentation is 4 columns.
+IndentWidth: 4
+
+ColumnLimit: 101
+
+## Indent case labels in a switch statement as well as the case blocks.
+IndentCaseLabels: true
+IndentCaseBlocks: true
+
+AlwaysBreakTemplateDeclarations: true
+
+AllowShortEnumsOnASingleLine: false
+---
