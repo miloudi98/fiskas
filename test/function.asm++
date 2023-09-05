@@ -1,0 +1,31 @@
+// One-line comments should be ignored.
+
+// General purpose registers.
+//Rax, Eax,  Ax,   Al, Ah,
+//Rbx, Ebx,  Bx,   Bl, Bh,
+//Rcx, Ecx,  Cx,   Cl, Ch,
+//Rdx, Edx,  Dx,   Dl, Dh,
+//Rbp, Ebp,  Bp,   Bpl,
+//Rsi, Esi,  Si,   Sil,
+//Rdi, Edi,  Di,   Dil,
+//Rsp, Esp,  Sp,   Spl
+//Rip, Eip,
+//R8,  R8d,  R8w,  R8b,
+//R9,  R9d,  R9w,  R9b,
+//R10, R10d, R10w, R10b,
+//R11, R11d, R11w, R11b,
+//R12, R12d, R12w, R12b,
+//R13, R13d, R13w, R13b,
+//R14, R14d, R14w, R14b,
+//R15, R15d, R15w, R15b,
+//
+//// Segment registers
+//Cs, Ds, Ss, Es, Fs, Gs,
+//
+//// Status flags register
+//Eflags,
+fn test_function() {
+    mov(rax, 2143758214);
+    return;
+}
+

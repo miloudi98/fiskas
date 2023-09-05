@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <utility>
+#include <unordered_map>
 
 using i8 = int8_t;
 using i16 = int16_t;
@@ -45,6 +46,13 @@ namespace vws = std::ranges::views;
 // ============================================================================
 namespace detail {
 
+[[noreturn]] auto fiska_assert_impl(
+		std::string error_msg,
+		std::string file,
+		int line,
+		std::string func_name,
+		std::string helper_msg = "") -> void;
+
 template <typename... Args>
     requires(... and std::is_same_v<Args, bool>)
 auto any(Args... args) -> bool {
@@ -71,10 +79,34 @@ constexpr auto operator+(Enum e) -> std::underlying_type_t<Enum> {
 }
 
 // ============================================================================
+// StringMap accepting multiple types of string input
+// ============================================================================
+struct StringHash {
+	using is_transparent = void;
+
+	auto operator()(std::string_view data) const -> usz { return std::hash<std::string_view>{}(data); }
+	auto operator()(const std::string &data) const -> usz { return std::hash<std::string>{}(data); }
+};
+
+template <typename Value>
+using StringMap = std::unordered_map<std::string, Value, StringHash, std::equal_to<>>; 
+
+// ============================================================================
 // Symbol concatenation
 // ============================================================================
 #define CAT_IMPL(x, y) x##y
 #define CAT(x, y) FISKA_CAT_IMPL(x, y)
+
+// ============================================================================
+// Custom assertion with stack trace.
+// ============================================================================
+#define fiska_assert(cond, ...)                             \
+	(cond ? void(0) :                                       \
+	 ::detail::fiska_assert_impl(                           \
+		 fmt::format("Assertion: `{}` failed.", #cond),    	\
+		 __FILE__, __LINE__, __FUNCTION__ __VA_OPT__(,      \
+		 fmt::format(__VA_ARGS__))))                        \
+
 
 // ============================================================================
 // Colored output to the terminal
@@ -85,6 +117,8 @@ enum struct Colors {
     Blue,
     Cyan,
     Red,
+	Bold,
+	Underline,
 };
 
 struct Color {
@@ -100,8 +134,12 @@ struct Color {
                 return "\033[36m";
             case Colors::Red:
                 return "\033[31m";
+			case Colors::Bold:
+				return "\033[1m";
+			case Colors::Underline:
+				return "\033[4m";
         }
-        __builtin_unreachable();
+		return "";
     }
 };
 
@@ -148,7 +186,7 @@ struct File {
             }
 
             // Replace this horrible assertion with proper error messages.
-            assert(written == 1);
+			fiska_assert(written == 1);
             data = (u8 *)data + written;
             size -= written;
         }

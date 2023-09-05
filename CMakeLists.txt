@@ -108,7 +108,7 @@ target_link_options(assembler PUBLIC
 	$<$<CONFIG:RELEASE>:-O3 -march=native>)
 
 # Link libfmt to our library
-target_link_libraries(assembler PUBLIC fmt)
+target_link_libraries(assembler PUBLIC fmt GTest::gtest_main)
 
 ## ============================================================================
 ## Executables 
@@ -116,3 +116,25 @@ target_link_libraries(assembler PUBLIC fmt)
 add_executable(assembler_main "${PROJECT_SOURCE_DIR}/src/main.cc")
 set_target_properties(assembler_main PROPERTIES OUTPUT_NAME "assembler_main")
 target_link_libraries(assembler_main assembler)
+
+
+##enable_testing()
+##add_executable(lexer_test
+##	lib/asm_cc/lexer_test.cc
+##)
+##add_executable(parser_test
+##	lib/asm_cc/parser_test.cc
+##)
+##
+##target_link_libraries(lexer_test
+##	GTest::gtest_main
+##	assembler
+##)
+##target_link_libraries(parser_test
+##	GTest::gtest_main
+##	assembler
+##)
+##
+##include(GoogleTest)
+##gtest_discover_tests(lexer_test parser_test)
+

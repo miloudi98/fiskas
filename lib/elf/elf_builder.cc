@@ -61,7 +61,7 @@ auto extract_syms_and_sym_strtab(const Code &code) -> std::pair<std::vector<Symb
 	return { symbols, sym_strtab };
 }
 
-auto build_all_sections(SectionTable &sec_tab, const Code &code) -> void {
+auto build_all_sections_and_update_hdrs(SectionTable &sec_tab, const Code &code) -> void {
 	auto [elf_syms, sym_strtab] = extract_syms_and_sym_strtab(code);
 
 	sec_tab.body(SectionType::Text) = code.text;
@@ -102,9 +102,9 @@ auto build_elf_file(const Code &code) -> void {
 	Serializer ser;
 
 	ElfHeader elf_header = ElfHeader::create_with_default_params();
-	build_all_sections(sec_tab, code);
-
+	build_all_sections_and_update_hdrs(sec_tab, code);
 	elf_header.e_shoff = ElfHeader::serialized_size() + sec_tab.size_of_all_section_bodies();
+
 	ser << elf_header;
 
 	for (u16 sec_idx = 0; sec_idx < SectionTable::num_sections(); ++sec_idx) {
