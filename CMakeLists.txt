@@ -42,13 +42,17 @@ FetchContent_MakeAvailable(googletest)
 ## ============================================================================
 file(GLOB_RECURSE library-sources
 	"${PROJECT_SOURCE_DIR}/lib/*.cc"
-	"${PROJET_SOURCE_DIR}/include/*.hh")
+	"${PROJECT_SOURCE_DIR}/include/*.hh"
+	"${PROJECT_SOURCE_DIR}/fiskas/*.hh"
+	"${PROJECT_SOURCE_DIR}/fiskas/*.cc")
 
 add_library(assembler STATIC ${library-sources})
 
 target_include_directories(assembler PUBLIC "${PROJECT_SOURCE_DIR}/include")
 # Include directories of the third_party libraries installed.
 target_include_directories(assembler PUBLIC "${libfmt_SOURCE_DIR}/include")
+# Include fiskas directories
+target_include_directories(assembler PUBLIC "${PROJECT_SOURCE_DIR}/fiskas")
 
 # More compile options.
 target_compile_options(assembler PUBLIC 
@@ -118,23 +122,16 @@ set_target_properties(assembler_main PROPERTIES OUTPUT_NAME "assembler_main")
 target_link_libraries(assembler_main assembler)
 
 
-##enable_testing()
-##add_executable(lexer_test
-##	lib/asm_cc/lexer_test.cc
-##)
-##add_executable(parser_test
-##	lib/asm_cc/parser_test.cc
-##)
-##
-##target_link_libraries(lexer_test
-##	GTest::gtest_main
-##	assembler
-##)
-##target_link_libraries(parser_test
-##	GTest::gtest_main
-##	assembler
-##)
-##
-##include(GoogleTest)
-##gtest_discover_tests(lexer_test parser_test)
+enable_testing()
+add_executable(lexer_test
+	fiskas/lexer_test.cc
+)
+
+target_link_libraries(lexer_test
+	GTest::gtest_main
+	assembler
+)
+
+include(GoogleTest)
+gtest_discover_tests(lexer_test)
 

@@ -99,22 +99,23 @@ using StringMap = std::unordered_map<std::string, Value, StringHash, std::equal_
 // ============================================================================
 // Custom assertion with stack trace.
 // ============================================================================
-#define fiska_assert(cond, ...)                             \
-	(cond ? void(0) :                                       \
-	 ::detail::fiska_assert_impl(                           \
-		 fmt::format("Assertion: `{}` failed.", #cond),    	\
-		 __FILE__, __LINE__ __VA_OPT__(,                    \
-		 fmt::format(__VA_ARGS__))))                        \
+#define fiska_assert(cond, ...)                                           \
+	(cond ? void(0) :                                                     \
+	 ::detail::fiska_assert_impl(                                         \
+		 fmt::format("Assertion: `{}` failed.", #cond),    	              \
+		 __FILE__, __LINE__ __VA_OPT__(,                                  \
+		 fmt::format(__VA_ARGS__))))                                      \
 
-#define fiska_todo()                                        \
-	::detail::fiska_assert_impl(                            \
-			fmt::format("Unimplemented!"), __FILE__,        \
-			__LINE__)                                       \
+#define fiska_todo(...)                                                   \
+	::detail::fiska_assert_impl(                                          \
+			fmt::format("Unimplemented!"), __FILE__,                      \
+			__LINE__ __VA_OPT__(, fmt::format(__VA_ARGS__)))              \
 
-#define fiska_unreachable()                                 \
-	::detail::fiska_assert_impl(                            \
-			"Reached an unreachable state!",                \
-			__FILE__, __LINE__)                             \
+#define fiska_unreachable(...)                                            \
+	::detail::fiska_assert_impl(                                          \
+			"Reached an unreachable state!",                              \
+			__FILE__, __LINE__ __VA_OPT__(,                               \
+				fmt::format(__VA_ARGS__)))                                \
 
 
 
@@ -212,7 +213,7 @@ struct File {
 				"Failed to get filestat when opening file: '{}'", path.string());
 
         void *ptr = mmap(nullptr, usz(file_stat.st_size), PROT_READ, MAP_PRIVATE, fd, 0);
-		fiska_assert(ptr != MAP_FAILED, "Failed to map file: '{}' to RAM", path.string());
+		fiska_assert(ptr != MAP_FAILED, "Failed to map file: '{}' to memory", path.string());
 
         std::vector<u8> content(usz(file_stat.st_size));
         memcpy(content.data(), ptr, usz(file_stat.st_size));

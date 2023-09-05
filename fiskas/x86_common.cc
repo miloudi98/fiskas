@@ -1,7 +1,7 @@
 #include <string_view>
 
 #include "base.hh"
-#include "fiskas/x86_common.hh"
+#include "x86_common.hh"
 
 namespace fiskas {
 namespace common {
