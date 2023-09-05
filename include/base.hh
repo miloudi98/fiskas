@@ -50,7 +50,6 @@ namespace detail {
 		std::string error_msg,
 		std::string file,
 		int line,
-		std::string func_name,
 		std::string helper_msg = "") -> void;
 
 template <typename... Args>
@@ -104,8 +103,20 @@ using StringMap = std::unordered_map<std::string, Value, StringHash, std::equal_
 	(cond ? void(0) :                                       \
 	 ::detail::fiska_assert_impl(                           \
 		 fmt::format("Assertion: `{}` failed.", #cond),    	\
-		 __FILE__, __LINE__, __FUNCTION__ __VA_OPT__(,      \
+		 __FILE__, __LINE__ __VA_OPT__(,                    \
 		 fmt::format(__VA_ARGS__))))                        \
+
+#define fiska_todo()                                        \
+	::detail::fiska_assert_impl(                            \
+			fmt::format("Unimplemented!"), __FILE__,        \
+			__LINE__)                                       \
+
+#define fiska_unreachable()                                 \
+	::detail::fiska_assert_impl(                            \
+			"Reached an unreachable state!",                \
+			__FILE__, __LINE__)                             \
+
+
 
 
 // ============================================================================
@@ -175,9 +186,7 @@ struct Timer {
 struct File {
     static auto write(void *data, u64 size, const fs::path &path) -> void {
         auto file = std::fopen(path.c_str(), "wb");
-        // Replace this horrible assertion with proper error messages.
-        // Replace this with a proper FISKA_ASSERT();
-        assert(file);
+		fiska_assert(file, "Failed to open file: {}", path.string());
 
         while (1) {
             auto written = std::fwrite(data, 1, size, file);
@@ -185,8 +194,7 @@ struct File {
                 break;
             }
 
-            // Replace this horrible assertion with proper error messages.
-			fiska_assert(written == 1);
+			fiska_assert(written == 1, "Failed to write byte to file: {}", path.string());
             data = (u8 *)data + written;
             size -= written;
         }
@@ -196,23 +204,15 @@ struct File {
     // Map the file to RAM and copy its content to a new vector of bytes.
     static auto load(const fs::path &path) -> std::vector<u8> {
         int fd = open(path.c_str(), O_RDONLY);
-        if (fd < 0) {
-            perror("failed to open a file");
-            std::exit(1);
-        }
+		fiska_assert(fd >= 0, 
+				"Failed to open file: '{}'", path.string());
 
         struct stat file_stat {};
-
-        if (fstat(fd, &file_stat) < 0) {
-            perror("failed to get file stat");
-            std::exit(1);
-        }
+		fiska_assert(fstat(fd, &file_stat) >= 0,
+				"Failed to get filestat when opening file: '{}'", path.string());
 
         void *ptr = mmap(nullptr, usz(file_stat.st_size), PROT_READ, MAP_PRIVATE, fd, 0);
-        if (ptr == MAP_FAILED) {
-            perror("failed to map the file to AS");
-            std::exit(1);
-        }
+		fiska_assert(ptr != MAP_FAILED, "Failed to map file: '{}' to RAM", path.string());
 
         std::vector<u8> content(usz(file_stat.st_size));
         memcpy(content.data(), ptr, usz(file_stat.st_size));

@@ -34,7 +34,6 @@ auto print_stack_trace() -> void {
 		std::string error_msg,
 		std::string file,
 		int line,
-		std::string func_name,
 		std::string helper_msg) -> void
 {
 	Color C;
