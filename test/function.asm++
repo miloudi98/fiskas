@@ -25,7 +25,8 @@
 //// Status flags register
 //Eflags,
 fn test_function() {
-    mov(rax, 2143758214);
+    mov(xmm1, [rax + 8*rbx] as b256);
+
     return;
 }
 

@@ -117,7 +117,6 @@ TEST(SmokeTest, SmokeTest_3) {
 		Token::gen(RightBrace, 1),
 		Token::gen(Eof, 0, 0)
 	});
-
 }
 
 

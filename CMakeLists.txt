@@ -123,15 +123,13 @@ target_link_libraries(assembler_main assembler)
 
 
 enable_testing()
-add_executable(lexer_test
-	fiskas/lexer_test.cc
-)
 
-target_link_libraries(lexer_test
-	GTest::gtest_main
-	assembler
-)
+add_executable(lexer_test fiskas/lexer_test.cc)
+add_executable(parser_test fiskas/parser_test.cc)
+
+target_link_libraries(lexer_test GTest::gtest_main assembler)
+target_link_libraries(parser_test GTest::gtest_main assembler)
 
 include(GoogleTest)
-gtest_discover_tests(lexer_test)
+gtest_discover_tests(lexer_test parser_test)
 

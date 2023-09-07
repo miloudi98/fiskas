@@ -86,6 +86,7 @@ struct Token {
 	usz offset{};
 	usz len{};
 
+public:
 	static auto gen(TokenKind kind, usz offset, usz len) -> Token {
 		return {.kind = kind, .offset = offset, .len = len};
 	}
@@ -101,36 +102,7 @@ public:
 public:
 	Lexer(std::string source) : Cursor(source) {}
 
-	auto next_token() -> Token {
-		eat_while(is_whitespace);
-
-		if (eof()) return Token::gen(TokenKind::Eof, 0, 0);
-
-		usz start_offset = pos();
-
-		char c = next_char_pnc();
-		TokenKind tok_kind = [&] {
-			switch (c) {
-				case '(': return TokenKind::LeftParen;
-				case ')': return TokenKind::RightParen;
-				case '{': return TokenKind::LeftBrace;
-				case '}': return TokenKind::RightBrace;
-				case ',': return TokenKind::Comma;
-				case ';': return TokenKind::SemiColon;
-				default: return multi_char_token_kind(); 
-			}
-			fiska_unreachable();
-		}();
-
-		if (tok_kind == TokenKind::Identifier) {
-			std::string tok_literal = source_substring(start_offset, pos());
-			tok_kind = keywords.contains(tok_literal) 
-				? keywords.at(tok_literal) 
-				: TokenKind::Identifier;
-		}
-
-		return Token::gen(tok_kind, start_offset, pos() - start_offset);
-	}
+	auto next_token() -> Token;
 
 	auto multi_char_token_kind() -> TokenKind {
 		if (is_number(prev)) {

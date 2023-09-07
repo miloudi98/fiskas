@@ -59,6 +59,11 @@ auto any(Args... args) -> bool {
 }
 
 template <typename T>
+auto one_of(const T &value, const auto &... others) -> bool {
+	return ((value == others) or ...);
+}
+
+template <typename T>
 static auto extend(std::vector<T> &dst, const std::vector<T> &src) {
 	std::copy(src.begin(), src.end(), std::back_inserter(dst));
 }
